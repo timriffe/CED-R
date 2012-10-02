@@ -1,7 +1,8 @@
 
 # Author: triffe
-###############################################################################
 
+# primeros pasos
+###############################################################################
 # R es una mega-calculadora:
 # envia:
 1+1
@@ -16,6 +17,7 @@ a+b
 # puede estar 'funcionalizado'. Que es una funcion? En R todo es un objecto, funciones tambien.
 # 
 
+# ayuda
 # ----------------------------------------------------------------------
 # usar ayuda basica: 
 
@@ -89,6 +91,8 @@ points(x, cex = .5, col = "dark red")
 # o busca un tutorio corto (largo) especifico (general)
 # aqui: http://cran.r-project.org/other-docs.html
 
+# aqui un wikibook en catalan: http://ca.wikibooks.org/wiki/Manual_de_R_(Estadística)
+
 # o mira esto para una descripcion de las funciones mas frequentes:
 # cran.r-project.org/doc/contrib/Short-refcard.pdf
 
@@ -98,8 +102,9 @@ points(x, cex = .5, col = "dark red")
 # o usa la lista de correo de RUGBCN, que es una fuente de ayuda local (preguntas generales)
 # http://groups.google.com/group/rugbcn
 
-# en general, empieza con ? y con Google.
+# en general, empieza con ? dentro de R y con Google.
 
+# funciones
 # ----------------------------------------------------------------------
 # uso basico de funciones:
 
@@ -123,6 +128,7 @@ ls() # nos dice todo lo que hay
 rm(a,b) 
 ls() # limpio
 
+# packages
 # ----------------------------------------------------
 # packages:
 
@@ -152,8 +158,9 @@ library(optimx)
 # tu sabras con el tiempo cuales packages sirven en tu trabajo especifico.
 # hay hasta packages para demografos- 
 
-
+# [datos]
 # ----------------------------------------------------
 # lectura e introduccion de datos:
 
+# vamos a www.ine.es   ...
 
