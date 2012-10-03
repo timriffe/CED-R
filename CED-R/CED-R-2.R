@@ -284,8 +284,6 @@ polygon(c(1:12, 12:1), c(meses95[1, ],rev(meses95[2, ])), col = "#FF000050", bor
 
 # ahora, si yo invento aqui un indice de la 'magnitud de la estacionalidad' (no en el sentido de series temporales, sino mas en el sentido Vivaldi!),
 # a ver si me puedes decir si son los chicos o las chicas mas estacionales en 2011?
-TOT <- sum(mnths)
-(sum(abs(mnths - (TOT / length(mnths)))) / 2) / TOT
 
 # un indicador que varie entre 0 y 1: 
 # 0- perfectamente igual en cada mes (semana,dia) ; 
@@ -313,9 +311,18 @@ hist(Estac.sim.Ind) # mira la histograma
 Estac(colSums(NACt)) ; quantile(Estac.sim.Ind, probs = c(.025, .975))
 # pues si, parece una estimacion algo estable.
 
+# que magnitud del indicador se puede esperar si sea solo ruido?
+mes.avg <- sum(NACt) / 12
+Estac.sim.base <- matrix(rpois(12000, lambda = mes.avg), ncol = 12)
+Estac.sim.base.Ind <- apply(Estac.sim.base, 1, Estac)
+quantile(Estac.sim.base.Ind, probs = c(.025, .5, .975)) # mucho menor!, 
+# es decir puede que el indicador nos dice aglo real en los datos..
+
 # retos, a ver si me podeis decir, tras copiando y pegando creativamente
 # 1) son chicos o chicas en 2011 los que tengan el valor mas alto de 'Estac()'?
 # 2) parece ser una diferencia creible?
+
 # 3) la edad de la madre tiene un efecto?- a ver si puedes acercar a una respuesta sin uso de estadistica inferencial.
+
 
 
