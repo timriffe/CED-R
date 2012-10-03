@@ -2,19 +2,28 @@
 # Author: triffe
 ###############################################################################
 
-# 1) leer datos desde formatos distintos:
+# Session 2, manipular objectos
+
+# ---------------------------------------------------
+# leer unos datos:
 
 # desde un fichero separado con comas:
 
-
 # al final del sintaxis hay mas maneras de leer datos!
-NAC <- read.csv("/home/triffe/git/CED-R/CED-R/data/CSVcoma.csv", skip = 8, stringsAsFactors = FALSE,  fileEncoding="latin1")
-# skip = 8 quiere decir que salta las primeras 8 lineas- INE ha puesto metadatos alli
-# stringsAsFactors = FALSE quiere decir que si vea algun columna compuesta de caracteres,
-#       que no lo convierte en variable categorica. 
-dim(NAC) # 39 filas, 28 columnas..
+
+# cambia el destino. file.choose() puede ser util 
+NAC <- read.csv("/home/triffe/git/CED-R/CED-R/data/CSVcoma.csv", # cambie esto a donde tienes el fichero
+        skip = 8,                  # que salta las primeras 8 lineas- INE ha puesto metadatos alli 
+        stringsAsFactors = FALSE,  # quiere decir que si vea algun columna compuesta de caracteres,
+                                   # que NO lo convierte en variable categorica. 
+        fileEncoding = "latin1")   # para respetar los acentos!
+
+dim(NAC) # 39 filas, 28 columnas.
 head(NAC) # la ultima columna es basura..
 tail(NAC) # al fondo tambien hay unas filas de basura (mas metadatos del INE)
+
+# --------------------------------------------------
+# limpiar los datos
 
 # reducimos los datos a solo las columnas y filas que tengan datos utiles:
 # [] se usa para 'indexar', es decir, especificar filas y/o columnas.
@@ -28,12 +37,12 @@ NAC <- NAC[1:35, 1:27] # filas primero, columnas segundo
 head(NAC)
 tail(NAC)
 
-# la columna de edades tampoco es muy util tal como esta: ponemos en integer:
-NAC[, 1] <- 15:49 # esto solo funciona si el vector que asignas tiene la longitud corecta...
+# la columna de edades (la primera- [, 1]) tampoco es muy util tal como esta: asignamos edades como integer:
+NAC[, 1] <- 15:49 # esto solo funciona si el vector (15:49) que asignas tiene la longitud corecta...
 
 # que pasaria si lo ponemos mal?
 NAC[, 1] <- 15:48 # no lo acepta!
-NAC[, 1]          # vez, no ha cambiado
+NAC[, 1]          # mira, no ha cambiado
 # PERO, si por casualidad es divisible:
 NAC[, 1] <- 1:5   # no te dice NADA! 
 NAC[, 1]          # en otros contextos de programacion, esto es conveniente, 
@@ -45,7 +54,7 @@ colnames(NAC) # "X", porque faltaba un nombre en el csv...
 # puedes indexar con nombres tambien:
 NAC[, "X"] <- 15:49 
 # y hay otras maneras.
-
+NAC$X # e.g. $
 # este tipo objecto de llama un 'data.frame' ; es lo mas comun de R
 class(NAC)
 
@@ -56,8 +65,14 @@ class(NAC)
 # vamos a ver como leerlo de otra manera
 
 # read.table es la funcion mas generica de leer datos; aqui separado con tabuladoras:
-NAC2 <- read.table("/home/triffe/git/CED-R/CED-R/data/CSVtab.csv", 
-                          sep = "\t", skip = 8, header = TRUE, stringsAsFactors = FALSE, nrows = 35, fileEncoding="latin1")
+# file.choose() # para buscar donde estan los datos.
+NAC2 <- read.table("/home/triffe/git/CED-R/CED-R/data/CSVtab.csv",  # donde esta el fichero
+                          sep = "\t",                # el fichero esta separado con tabuladoras (" ", ";", ",", etc)
+                          skip = 8,                  # salta lsa primeras 8 filas de metadatos
+                          header = TRUE,             # si, tiene cabezado
+                          stringsAsFactors = FALSE,  # character- no factor
+                          nrows = 35,                # para despues de 35 filas leidas
+                          fileEncoding = "latin1")   # como tiene acentos
 # especifico nrows = 35 porque las filas por debajo son incompletas- nos salva tiempo limpiando en R
 # header = TRUE aqui no es por defecto- hay que decirlo
 # sep = "\t" especifica tabuladores, existen otros: " ", ";", ",", etc
@@ -70,7 +85,7 @@ rm(NAC2)
 # Cuales son lo objectos que nos interesan:
 
 # Ya conoces los vectores:
-c(3,6,7,8,3,3)
+c(3, 6, 7, 8, 3, 3)
 # NAC es un data.frame
 # realmente un data.frame es un 'list', compuesta por vectores que tengan la misma longitud..
 # un list() es el objecto mas flexible de R. 
@@ -78,22 +93,26 @@ NAC
 # NAC podria ser una matriz:
 NACmat <- as.matrix(NAC)
 # tambien existen listas:
-mi.lista <- list(a = 1:10, b = list("a","b","c"), mi.matriz = matrix(1:10, ncol = 2))
-mi.ista
-# listas son absolutamente arbitrarias en cuanto clase/ longitud/ dimension.
+mi.lista <- list(a = 1:10, 
+                 b = list(b1 = 5, b2 = 19, c = 4:45), 
+                 mi.matriz = matrix(1:10, ncol = 2))
+mi.lista
+# listas son absolutamente arbitrarias en cuanto la clase/ longitud/ dimension de sus elementos
 
-# otro ejemplo:
+# otro ejemplo de list():
 # invento (imaginando 5 centuries)
 
-ID1               <- list() # ahora vacia
-ID1[["ID"]]       <- "62456215_0" 
-ID1[["padres"]]   <- c("6245","6215")
-ID1[["hermanos"]] <- c("62456215_1","62456215_2")
-ID1[["hijos"]]    <- NA
-ID1[["esposa"]]   <- "7620530_2"
-ID1[["clase"]]    <- 3
+ID1                 <- list() # ahora vacia
+# otra manera de componer una lista- elemento por elemento:
+# si en el momento no existe el elemento nombrado, se crea al final de la lista
+ID1[["ID"]]         <- "62456215_0"  
+ID1[["padres"]]     <- c("6245", "6215")
+ID1[["hermanos"]]   <- c("62456215_1", "62456215_2")
+ID1[["hijos"]]      <- NA
+ID1[["esposa"]]     <- "7620530_2"
+ID1[["clase"]]      <- 3
 ID1[["padreclase"]] <- 3
-ID1[["completo"]] <- TRUE
+ID1[["completo"]]   <- TRUE
 # se puede meter matrices, data.frames, otras listas; listas dentro de listas-
 # e.g. un arbol genealogico de parentesco, o lo que sea.
 
@@ -105,9 +124,9 @@ ID1
 (id <- ID1[["ID"]])
 # o usando el numero de indice:
 (id <- ID1[[1]])
-# un usando $:
+# o usando $:
 (id <- ID1$ID)
-# si quieres extraer varias cosas, solo hace falta una [
+# si quieres extraer varias cosas, solo hace falta una [ (no [[)
 (id_completo <- ID1[c("ID","completo")]) # seleccionando varias cosas, el $ ya no sirve...
 # tambien saldra una lista- si lo quieres luego en un vector:
 (id_completo_v <- unlist(id_completo))
