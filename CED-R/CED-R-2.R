@@ -222,8 +222,17 @@ tasas <- nacimientos / Exp
 
 plot(x = 15:49, y = tasas, type = 'l')
 
-# el ISF (si el padron sobre-estima, esto sera una subestimacion)
+# el ISF (si el padron sobre-estima la poblacion, esto sera una subestimacion)
 sum(tasas)
+
+# ejercicio:
+# 1) intenta leer los datos de tu proyecto actual dentro de R 
+#      (pero no si estan en formato fijo, que lo haremos mas tarde)
+# 2) intenta replicar la creacion de un variable nuevo a partir de tus datos
+#      por ejemplo-
+#      - 'centrar' una de tus columnas (subtraer la media de la columna), mean()
+#      - despues divir la columna por su propia esdesviacion estandard, sd()
+
 
 
 # -------------------------------------
