@@ -419,6 +419,27 @@ boxplot(EdadExacta ~ TAMUBAJA, data = EVRD, col = "lightblue", varwidth = TRUE)
 # 1) calcular la edad media al emigrar (o imigrar) por municipios y sexo.
 # 2) replicar el penultimo boxplot separando por sexo [preguntas aqui a la Anna Turu]
 
+# algo mas grande (dividir y conquistar):
+# 3) coger una serie completa de microdatos del MNP del INE y convirtelos todos a 'data.frame's, 
+#    guardados como .Rdata [save()]. Mejor preferir los microdatos mas 
+#    detallados que tiene el CED (pregunta Tere)- pero complementelos con los datos de la pagina
+#    del INE. Divide el trabajo entre vosotros para que el CED tenga una copia de la casa en formato
+#    R binario, que es igual lo mas conveniente (estan comprimidos, pero se lee mucho mas rapido). 
+#      a) las fechas de nacimiento y evento esten calculadas y guardadas como columnas de class 'Date'. 
+#      b) que luego hay columnas para edad (integer) y edad exacta (numeric)
+#      c) las etiquetas de las columnas esten harmonizadas tanto posible (cambian variables, etc) 
+#      d) todos los 'codigos' esten de class "character", para no perder los 0s
+#      e) que los municipios siempre tengan un identificador unico que es la concatenacion
+#         del codigo provincia y el codigo municipio. Esto no solo ayuda en calcular cosas por municipios
+#         sino tambien adjuntar datos a mapas.
+#    El trabajo esta facilitado por el hecho de que solo hay pocas revisiones de los ficheros de 
+#    microdatos- 4 creo normalmente. Si cada persona hace 1 o 2 revisions, ya lo tenemos todo y se podra
+#    hacer cosas mas grandes con aquello [en la session 5, si a caso].
+
+
+
+
+
 
 
 
