@@ -434,7 +434,9 @@ boxplot(EdadExacta ~ TAMUBAJA, data = EVRD, col = "lightblue", varwidth = TRUE)
 #         sino tambien adjuntar datos a mapas.
 #    El trabajo esta facilitado por el hecho de que solo hay pocas revisiones de los ficheros de 
 #    microdatos- 4 creo normalmente. Si cada persona hace 1 o 2 revisions, ya lo tenemos todo y se podra
-#    hacer cosas mas grandes con aquello [en la session 5, si a caso].
+#    hacer cosas mas grandes con aquello [en la session 5, si a caso]. Muchos fichero que tiene el CED
+#    ya estan fuera del formato de ancho fijo- estos se podrian convertir a .csv en SPSS o lo que sea
+#    y despues leer incialmente usando read.csv()- los que no tenga el CED con read.fwf()
 
 
 
