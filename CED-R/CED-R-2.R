@@ -33,7 +33,7 @@ NAC <- NAC[1:35, 1:27] # filas primero, columnas segundo
                        # seleccionamos solo las primeras 35 filas y 27 columnas (quitando totales tambien)
 # para que veas lo que pasa adentro de las []
 1:35
-
+dim(NAC)
 head(NAC)
 tail(NAC)
 
@@ -51,10 +51,11 @@ NAC[, 1]          # en otros contextos de programacion, esto es conveniente,
 NAC[, 1] <- 15:49 
 # tambien la primera columna tiene un nombre:
 colnames(NAC) # "X", porque faltaba un nombre en el csv...
+
 # puedes indexar con nombres tambien:
 NAC[, "X"] <- 15:49 
 # y hay otras maneras.
-NAC$X # e.g. $
+edades <- NAC$X # e.g. $
 # este tipo objecto de llama un 'data.frame' ; es lo mas comun de R
 class(NAC)
 
@@ -84,18 +85,50 @@ rm(NAC2)
 # volviendo a objectos:
 # Cuales son lo objectos que nos interesan:
 
+
+edades
+class(edades)
+is.vector(edades)
 # Ya conoces los vectores:
-c(3, 6, 7, 8, 3, 3)
+length(c(3, 6, 7, 8, 3, 3))
+
+x <- 1:6
+a <- c(3, 6, 7, 8, 3, 3)
+
+xa <- cbind(x,a)
+nuevafila <- c(2,3)
+rbind(xa, nuevafila)
+
 # NAC es un data.frame
 # realmente un data.frame es un 'list', compuesta por vectores que tengan la misma longitud..
 # un list() es el objecto mas flexible de R. 
 NAC
 # NAC podria ser una matriz:
 NACmat <- as.matrix(NAC)
+is.matrix(NACmat)
+
+
+
 # tambien existen listas:
 mi.lista <- list(a = 1:10, 
                  b = list(b1 = 5, b2 = 19, c = 4:45), 
                  mi.matriz = matrix(1:10, ncol = 2))
+
+a <- lm(x~a)
+is.list(a)
+names(a)
+a$coefficients
+a[["coefficients"]]
+a[[1]]
+coefs_a <- as.matrix(a$coef)
+names(a)
+score <- 4
+a[["score"]] <- score
+a$score
+a[[14]] <- c(89, 54)
+length(a)
+
+names(mi.lista)
 mi.lista
 # listas son absolutamente arbitrarias en cuanto la clase/ longitud/ dimension de sus elementos
 
@@ -146,6 +179,13 @@ length(ID1) # ten cuidado que el vector que usas tiene la misma longitud
 ID1[c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE)]
 # volvermos a ver ejemplos de vectores logicos usados para indexar...
 
+prov <- "Barcelona"
+edades
+
+paste(prov, edades, sep = "-")
+
+
+
 # --------------------------------------------------------------------------------
 # vamos a usar esta estrategia de indexar con vectores para hacer los datos de nacimientos mas utiles:
 
@@ -153,7 +193,11 @@ ID1[c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE)]
 head(NAC)
 # quiero los datos de varones en una matriz, y los de mujeres en otra matriz, porque si.
 colnames(NAC)
+
 # para buscar las columnas con "Varones" en el nombre, usamos grep()
+
+NAC[, c()]
+
 args(grep) # hechamos un vistazo a como especificarlo...
 grep(pattern = "Varones", x = colnames(NAC)) # los indices donde aparece "Varones"
 
@@ -162,9 +206,11 @@ NACm <- NAC[, grep(pattern = "Mujeres", x = colnames(NAC)) ]
 
 head(NACv)
 # quitamos la ultima columna, solo es un total:
-NACv <- NACv[, -13] # igual que NACv[, 1:12]
-NACm <- NACm[, 1:12]
+NACv <- NACv[, -ncol(NACv)] # igual que NACv[, 1:12]
+NACm <- NACm[, 1:(ncol(NACm)-1)]
 
+
+dim(NACv)
 # cambiamos los nombre de las columnas a algo entendible:
 meses <- c("en", "feb", "marzo", "abr", "mayo", "jun", "jul", "ag", "sept", "oct", "nov", "dic")
 colnames(NACv) <- meses 
@@ -179,6 +225,9 @@ class(NACv)
 NACv <- as.matrix(NACv)
 NACm <- as.matrix(NACm)
 
+colSums(NACv + NACm)
+rowSums(NACv + NACm)
+
 # ahora, si nos da igual tener nacimientos por sexo, se puede sumar:
 NACt <- NACv + NACm
 NACt
@@ -187,16 +236,18 @@ NACt
 
 # de hecho- qualquier operador matematico respeta las dimensiones de vectores y matrices.
 
-# puedes multiplicar cada elemento de la matriz por un numero unico:
-NACt * 5
 # si haces aritmetica entre vectores y matrices, vectores corresponden con filas!
 NACt * rep(.5, nrow(NACt)) # un resultado absurdo: media de chicos y chicas por edad la madre y mes
 # etc etc.
+
+
+
 
 # buscamos poblaciones a 1 de enero de 2011 y 2012:
 # estos son del padron, posiblemente no los mejores para denominadores
 # pero si los mas actuales y estan sin suavizar!
 # ya los he puesto bonito en un csv:
+file.choose()
 pob <- read.csv("/home/triffe/git/CED-R/CED-R/data/Pop.csv")
 
 head(pob)
@@ -211,6 +262,33 @@ p2011 <- pob[pob$Year == 2011 & pob$Age >= 15 & pob$Age <= 49, "Female"] # resul
 p2012 <- pob[pob$Year == 2012 & pob$Age >= 15 & pob$Age <= 49, "Female"]
 length(p2011) ; length(p2012) ; nrow(NACt)
 
+
+NACt <- cbind(NACt, p2011, p2012)
+
+ages5 <- 15:49 - 15:49 %% 5
+
+rep(seq(15, 49, by = 5), each = 5)
+
+NACt <- NACv + NACm
+sum(NACt[1:5, ])
+sum(NACt[6:10, ])
+rowSums(NACt)
+Nac5 <- tapply(nacimientos, ages5, sum)
+Exp5 <- tapply(Exp, ages5, sum)
+
+tasas5 <- Nac5 / Exp5
+barplot(tasas5, width = 5, space = 0, border = NA)
+x <- 15:49
+
+x[1:5]
+
+is.data.frame(NACt)
+NACt <- as.matrix(NACt)
+NACt[1:5,c("en","marzo")]
+NACt[, rep(c(FALSE, TRUE, FALSE),4)]
+rep(c(FALSE, TRUE, FALSE), each = 4)
+
+head(NACt)
 # hacemos vectores de la media para aproximar la exposicion:
 (Exp <- (p2011 + p2012) / 2) # interpolacion lineal; poblacion 1 julio; llamalo lo que quieres
 
@@ -220,8 +298,8 @@ length(p2011) ; length(p2012) ; nrow(NACt)
 # tasas especificas por edad:
 tasas <- nacimientos / Exp
 
-plot(x = 15:49, y = tasas, type = 'l')
-
+plot(x = edades, y = tasas, type = 's')
+args(plot)
 # el ISF (si el padron sobre-estima la poblacion, esto sera una subestimacion)
 sum(tasas)
 
