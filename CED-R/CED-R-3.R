@@ -405,18 +405,19 @@ boxplot(EdadMedEmig ~ TamOr)
 # modificamos el boxplot con mas parametros:
 boxplot(EdadMedEmig ~ TamOr, 
         col = "lightblue", 
-        varwidth = TRUE     # ancho proporcional a la raiz cuadrada del numero de casos (municipios, no personas)
-        )
+        varwidth = TRUE)    # ancho proporcional a la raiz cuadrada del numero de casos (municipios, no personas)
+        
 # mira ?boxplot para mas control
 
 # en vez de boxplots de las edades media, hacemos boxplots de las edades tal cual,
 # segun tamaño:
-boxplot(EdadExacta ~ TAMUBAJA, 
-        data = EVRD,
-        col = "lightblue", 
-        varwidth = TRUE     # ancho proporcional a la raiz cuadrada del numero de casos (municipios, no personas)
-)
-# el otro era mas descriptivo...
+boxplot(EdadExacta ~ TAMUBAJA, data = EVRD, col = "lightblue", varwidth = TRUE)
+# el anterior era mas descriptivo...
+
+# ----------------------------------------------
+# ejercicios:
+# 1) calcular la edad media al emigrar (o imigrar) por municipios y sexo.
+# 2) replicar el penultimo boxplot separando por sexo [preguntas aqui a la Anna Turu]
 
 
 
