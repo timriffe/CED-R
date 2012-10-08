@@ -158,9 +158,16 @@ head(SexoEdad)
 # he hecho un package para piramides, Pyramid()
 # lo puedes installar tal cual desde aqui https://sites.google.com/site/timriffepersonal/r-code/packagedownloads
 #, o activar el codigo directo del internet (mas rapido):
+
+# si no estas en windows, lo siguiente funciona:
 # install.packages("devtools") # tienes que primero conectar al internet, si estas en la Aula Informatica...
-library(devtools) # para cargar la funcion source_url()
-source_url("http://raw.github.com/timriffe/Pyramid/master/Pyramid/R/Pyramid.R")
+#library(devtools) # para cargar la funcion source_url()
+#source_url("http://raw.github.com/timriffe/Pyramid/master/Pyramid/R/Pyramid.R")
+
+# si estas en windows, mejor copiar y pegar el fichero dentro de un fichero que se llama Pyramid.R
+# y usar source("direccion/del/fichero.R") # para cargarlo
+# file.choose()
+source("/home/triffe/git/CED-R/CED-R/Pyramid.R")
 # ahora tienes una funcion que se llama Pyramid()
 Pyramid(males = SexoEdad[,1], females = SexoEdad[, 2])
 
