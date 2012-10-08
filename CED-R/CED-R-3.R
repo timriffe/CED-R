@@ -83,8 +83,8 @@ print(object.size(EVR), units = "Mb") # vez como se ha puesto mas grande en R qu
 # cambiar el fichero a un formato util cuesta trabajo. Si lo vas a usar en esta forma
 # mas de una vez, mejor guardarlo como un binario nativo de R...
 save(EVR, file = "/home/triffe/workspace/Migs/DATA/Rdata/EVR2010.Rdata")
-# luego lo cargas usando:
-# load("EVR2010.Rdata") # y aparecera un objecto "EVR" en tu espacio de trabajo
+# luego lo cargas usando: (cambiando la direccion
+# load("/home/triffe/workspace/Migs/DATA/Rdata/EVR2010.Rdata") # y aparecera un objecto "EVR" en tu espacio de trabajo
 # truco: si quieres asignarlo directamente a otro nombre, haz:
 # EVR.tu.nombre <- local(get(load("EVR2010.Rdata")))
 
@@ -163,6 +163,9 @@ head(SexoEdad)
 # install.packages("devtools") # tienes que primero conectar al internet, si estas en la Aula Informatica...
 #library(devtools) # para cargar la funcion source_url()
 #source_url("http://raw.github.com/timriffe/Pyramid/master/Pyramid/R/Pyramid.R")
+
+# solucion para windows
+source(pipe(paste("wget -O -", "http://raw.github.com/timriffe/Pyramid/master/Pyramid/R/Pyramid.R")))
 
 # si estas en windows, mejor copiar y pegar el fichero dentro de un fichero que se llama Pyramid.R
 # y usar source("direccion/del/fichero.R") # para cargarlo
@@ -336,6 +339,183 @@ mtext("estructura de migraciones por sexo y edad\nEspaña todas provincias, 2010
 # hay otras maneras de sacar un resultado parecido, vea lattice
 
 # -----------------------------------------------------------------------------------
+# a ver un scatterplot mas complejo- un proceso muy iterativo- 
+# sigues hasta que te gusta el producto
+
+# edad media del migrante, varones x mujeres, con diametro del punto como funcion
+# de migrantes totales?:
+
+edades.5 <- .5:109.5 # mitad de intervalo
+(em <- matrix(nrow = 53, ncol = 2, dimnames = list(1:53,c("varones","mujeres")))) # matriz para rellenar
+# usando bucle:
+for (i in 1:53){
+    em[i, ] <- colSums(edades.5 * SexoEdadProv[, , i]) / colSums(SexoEdadProv[, , i])
+}
+# ------------------------------------------
+# primera vista:
+plot(em[, 1], em[, 2])
+# ------------------------------------------
+# ajustando rango de los ejes:
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40))
+abline(0,1) # linea de igualdad
+
+# ------------------------------------------
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,            # punto solido
+        col = "#00000040"    # "#RRVVAAOO" (rojo, verde, azul, opacidad) = #00000040 = negro con 40% opacidad
+)    
+abline(0,1, col = gray(.5)) # linea de igualdad
+
+# ------------------------------------------
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,            # punto solido
+        col = "#0055FF80"    # azul con algo de verde, mas opacidad
+)    
+abline(0,1, col = gray(.5)) 
+
+# ------------------------------------------
+# variamos diametro del punto segun numero de migraciones:
+nr.migs <- colSums(colSums(SexoEdadProv))
+# quitamos nr 66:
+nr.migs <- nr.migs[1:(length(nr.migs) - 1)]
+em      <- em[1:(nrow(em) - 1), ]
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,             # punto solido
+        col = "#0055FF80",    # azul con algo de verde, mas opacidad
+        cex = nr.migs / sum(nr.migs) * 500 # mal!
+)  
+# absurdo- mejor cambar la area del circulo, no el diametro
+
+# ------------------------------------------
+#area = pi*r^2
+sqrt(nr.migs / pi) # sclamos el radio
+diametro.puntos <- sqrt(nr.migs / pi) / 20
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,             # punto solido
+        col = "#0055FF60",    # azul con algo de verde, mas opacidad
+        cex = diametro.puntos # mejor
+)  
+# ------------------------------------------
+# poner etiquetas, titulo
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,            
+        col = "#0055FF60",   
+        cex = diametro.puntos,
+        main = "cruzando variables graficamente", # titulo
+        xlab = "edad media emigrantes varones",
+        ylab = "edad media emigrantes mujeres"
+)  
+# ------------------------------------------
+# variar color segun otro variable continuo?
+
+SexoProv <- colSums(SexoEdadProv)
+rel.sexo <- SexoProv[1, ] / SexoProv[2, ]
+
+plot(sort(rel.sexo )) # como varia la relacion de sexo de emigrantes..
+plot(log(sort(rel.sexo ))) # como hay >1 y >1, hacemos log
+rel.sexo <- log(rel.sexo )
+
+# quiero variar el color 'continuamente'. Tenemos que definir una 'rampa de colores'
+# en R puedes hacer el color que quieras, mientres sabes la combinacion HEX. Tambien existen
+# packages para hacerte la vida mas facil:
+# install.packages("RColorBrewer")
+library(RColorBrewer) # Cynthia Brewer es como la reina de color en el mundo de cartografia y graficos estadisticos
+                      # www.colorbrewer.org ; tambien nos ha hecho un package
+# a ver cuales paletas nos da:
+display.brewer.all()
+# 'spectral' me parece adecuado.
+# es una paleta 'divergente' es decir, con 2 polos-
+(spec.colores <- brewer.pal(11,"Spectral"))
+# ahora queremos poder interpolar entre estos colores:
+library(grDevices) # viene con 'base'
+# colorRampPalette() nos hace una funcion de paleta- tu dices cuantos colores
+spec.col.ramp <- colorRampPalette(spec.colores, space = "Lab")
+# spec.col.ramp() es una funcion
+spec.col.ramp(100) # asi podemos aproximar una rampa continua de colores:
+# ahora tenemos que asignar colores segun el valor de relacion de sexo de emigrantes.
+# 
+
+# podriamos decir que el centro sea 1 (0 despues del logoritmo),
+# pero mas adecuado seria la relacion de sexo global de la muestra, no?
+RSglobal <- log(sum(SexoProv[1, ]) / sum(SexoProv[2, ])) 
+# ahora podemos definir unos intervalos (breaks) inteligentes:
+plot(sort(rel.sexo )) 
+abline(h = RSglobal)
+# para poder tener RSglobal en el medio, mas facil tratarlo como 0
+rel.sexo.resc <- rel.sexo - RSglobal
+(breaks <- seq(-.36,.36,by = .005))
+# esto nos divide el vector de valores en un factor, con etiquetas que son colores:
+col.vec <- cut(rel.sexo.resc, 
+               breaks = breaks,                            # intervales
+               labels = spec.col.ramp(length(breaks) - 1)) # las etiquetas (1 menos k el numero de intervalos)
+class(col.vec) # convertimos a character y tenemos un vector de colores que corresponden con nuestros valores :-)
+col.vec <- as.character(col.vec)
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,            
+        col = col.vec,   # cada color corresponde con un punto, pero son solidos....
+        cex = diametro.puntos,
+        main = "cruzando variables graficamente",
+        xlab = "edad media emigrantes varones",
+        ylab = "edad media emigrantes mujeres"
+)  
+# -------------------------------------
+col.vec.op <- paste0(col.vec, 90) # 50% opacidad
+plot(em[, 1], em[, 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,            
+        col = col.vec.op,   # cada color corresponde con un punto, pero son solidos....
+        cex = diametro.puntos,
+        main = "cruzando variables graficamente",
+        xlab = "edad media emigrantes varones",
+        ylab = "edad media emigrantes mujeres"
+)  
+# -------------------------------------
+# todavia, nos gustaria que primero dibuje los circulos mas grandes,
+# y acabar con los circulos mas pequeños
+plot.order <- rev(order(diametro.puntos))
+plot(em[plot.order , 1], em[plot.order , 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,            
+        col = col.vec.op[plot.order ],   # cada color corresponde con un punto, pero son solidos....
+        cex = diametro.puntos[plot.order ],
+        main = "cruzando variables graficamente",
+        xlab = "edad media emigrantes varones",
+        ylab = "edad media emigrantes mujeres"
+)
+# -------------------------------------
+# alguna leyenda:
+plot(em[plot.order , 1], em[plot.order , 2],
+        xlim = c(30,40),
+        ylim = c(30,40),
+        pch = 19,            
+        col = col.vec.op[plot.order ],   # cada color corresponde con un punto, pero son solidos....
+        cex = diametro.puntos[plot.order ],
+        main = "cruzando variables graficamente",
+        xlab = "edad media emigrantes varones",
+        ylab = "edad media emigrantes mujeres"
+)
+legend("bottomright",col = rev(paste0(spec.col.ramp(7))), pch = 19, pt.cex = 2, 
+        legend = c("muy masculino","masculino","algo masculino","media","algo feminino","feminino","muy feminino"))
+# igual este grafico no es no mas interesante-
+# lo puedes replicar para municipios?
+
+# -----------------------------------------------------------------------------------
 # a ver que mas se puede hacer...
 head(EVR)
 # quiero hacer algo para los municipios.
@@ -446,6 +626,7 @@ boxplot(EdadExacta ~ TAMUBAJA, data = EVRD, col = "lightblue", varwidth = TRUE)
 #    y despues leer incialmente usando read.csv()- los que no tenga el CED con read.fwf()
 
 
+#
 
 
 
