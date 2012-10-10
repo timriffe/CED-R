@@ -1,0 +1,53 @@
+Álava	01	16
+Albacete	02	07
+Alicante/Alacant	03	10
+Almería	04	01
+Ávila	05	08
+Badajoz	06	11
+Balears (Illes)	07	04
+Barcelona	08	09
+Burgos	09	08
+Cáceres	10	11
+Cádiz	11	01
+Castellón/Castelló	12	10
+Ciudad Real	13	07
+Córdoba	14	01
+Coruña (A)	15	12
+Cuenca	16	07
+Girona	17	09
+Granada	18	01
+Guadalajara	19	07
+Guipúzcoa	20	16
+Huelva	21	01
+Huesca	22	02
+Jaén	23	01
+León	24	08
+Lleida	25	09
+Rioja (La)	26	17
+Lugo	27	12
+Madrid	28	13
+Málaga	29	01
+Murcia	30	14
+Navarra	31	15
+Ourense	32	12
+Asturias	33	03
+Palencia	34	08
+Palmas (Las)	35	05
+Pontevedra	36	12
+Salamanca	37	08
+Santa Cruz de Tenerife	38	05
+Cantabria	39	06
+Segovia	40	08
+Sevilla	41	01
+Soria	42	08
+Tarragona	43	09
+Teruel	44	02
+Toledo	45	07
+Valencia/València	46	10
+Valladolid	47	08
+Vizcaya	48	16
+Zamora	49	08
+Zaragoza	50	02
+Ceuta	51	18
+Melilla	52	19
+Extranjero	66	20
