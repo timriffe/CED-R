@@ -72,7 +72,7 @@ EVR <- read.fwf(file = unzipped.path,       # donde esta el fichero descomprimid
                )                            #                         la funcion va a pensar que sea integer
                                             #                         cambiara '001' a 1. luego no te sirve como un ID..
 # mas informacion aqui: ?read.fwf
-
+load("/home/triffe/workspace/Migs/DATA/Rdata/EVR2010.Rdata")
 # tamaño aproximado del fichero descomprimido en tu sistema:
 file.info(unzipped.path)$size / 1048576 # bueno, depende del sistema
 # cuanta memoria ocupa cuando esta dentro de R:
@@ -97,7 +97,7 @@ file.remove(zip.dir)
 
 
 
-
+ls()
 # ---------------------------------------------------------------
 # ahora vamos a trabajar con los datos del EVR 2010
 dim(EVR) # 2,5 milliones de casos! 
@@ -130,7 +130,7 @@ head(EVR)
 (unas.fechas.inventadas.Date <- as.Date(unas.fechas.inventadas.char))
 # parece character, pero no lo es: te muestra la fechas de manera que lo entiendes,
 # pero realmente esta representado con un numero (en dias)
-unas.fechas.inventadas.Date + 10
+unas.fechas.inventadas.Date - 10
 as.integer(unas.fechas.inventadas.Date) # si?
 # te hacer preguntar- que se considera fecha 0?
 unas.fechas.inventadas.Date - as.integer(unas.fechas.inventadas.Date) # tiempo empieza el 1 de enero, 1970!
@@ -141,17 +141,21 @@ unas.fechas.inventadas.Date - as.integer(unas.fechas.inventadas.Date) # tiempo e
 EVR$FechaN <- as.Date(paste(EVR$ANONACI, EVR$MESNACI, EVR$DIANACI, sep = "-"))
 EVR$FechaM <- as.Date(paste(EVR$ANORECEP, EVR$MESRECEP, EVR$DIARECEP, sep = "-"))
 
+head(EVR)
+
+
 hist(as.integer(EVR$FechaM - EVR$FechaN), main = "edad en dias en el EVR, 2010")
 # lo guardamos asi, dividiendo por 365.25, una aproximacion aceptable
 EVR$EdadExacta <- as.numeric((EVR$FechaM - EVR$FechaN) / 365.25)
 # en años cumplidos floor() va al integer abajo /  ceiling() al integer arriba / round() va al decimal que tu digas
 EVR$Edad       <- floor(EVR$EdadExacta)
-
+EVR$Edad[1:10]
 # olvidando del espacio, aqui las frequencias en edades sencillas:
 table(EVR$Edad)
 # mejor, por edad y sexo:
 
-SexoEdad <- table(EVR$Edad, EVR$SEXO)
+(SexoEdad <- table(EVR$Edad, EVR$SEXO))
+
 head(SexoEdad)
 
 # una piramide de migraciones?
@@ -170,12 +174,16 @@ source(pipe(paste("wget -O -", "http://raw.github.com/timriffe/Pyramid/master/Py
 # si estas en windows, mejor copiar y pegar el fichero dentro de un fichero que se llama Pyramid.R
 # y usar source("direccion/del/fichero.R") # para cargarlo
 # file.choose()
-source("/home/triffe/git/CED-R/CED-R/Pyramid.R")
+# source("/home/triffe/git/CED-R/CED-R/Pyramid.R")
 # ahora tienes una funcion que se llama Pyramid()
 Pyramid(males = SexoEdad[,1], females = SexoEdad[, 2])
-
+args(Pyramid)
 # hay muchos argumentos posibles
 args(Pyramid)
+
+
+
+
 # por defecto te pone los ejes en terminos de proporcion.
 # para ilustrar unos de los argumentos:
 Pyramid(males = SexoEdad[,1], females = SexoEdad[, 2], 
@@ -215,6 +223,8 @@ Pyramid(males = SexoEdad[,1], females = SexoEdad[, 2],
         grid.bg = gray(.9), grid.lty = 1, grid.col = "white",
         grid.lwd = .5, main = "Spain moves 2010, by sex and age of mover\ndata from EVR www.ines.es")
 dev.off()
+
+getwd()
 # luego, dentro de Word lo insertes como un fichero de imagen
 
 # tambien existen otros formatos utiles: 
@@ -310,6 +320,8 @@ PiramideSencillo <- function(SexoEdad, xlim = c(-.03, .03), prov){
 
 (cod.prov <- dimnames(SexoEdadProv)[[3]])
 
+
+pdf("pyramidtable.pdf")
 # guarda parametros globales de plotting
 op <- par(no.readonly = TRUE)
 # con un poco margen abajo y arriba, pero nada en los lados
@@ -318,22 +330,27 @@ par(mfrow = c(8, 7),         # queremos 8 filas y 7 columnas de graficos,
     oma = c(1,1,3,1),        # margenes externales del conunto de graficos
     xpd = TRUE)              # le damos permiso de dibjuar en los margenes        
 # uso del bucle 'for':
-# 'i' puede tener cualquier nombre
-# 'in' identifique el vector de cuenta.
-# i asume sequencialmente el valor de cada elemento del vector (1:53) 
-for (i in 1:dim(SexoEdadProv)[3]){  # '{' es necesario - se cierre al final
-    # [todas columnas, todas filas, 'planta i'] (sale una matriz)
-    PiramideSencillo(SexoEdadProv[, , i], xlim = c(-.025, .025), prov = cod.prov[i]) # xlim, prov, son argumentos de nuestra funcion arriba
-}
+
+
+for (i in 1:53){  # '{' es necesario - se cierre al final
+      
+  # [todas columnas, todas filas, 'planta i'] (sale una matriz)
+    PiramideSencillo(SexoEdadProv[, , i], 
+                     xlim = c(-.025, .025), 
+                     prov = cod.prov[i]) # xlim, prov, son argumentos de nuestra funcion arrib
+    }
 # haremos mas bucles en otros momentos. En R, bucles normalmente no son necesarios,
 # pero existen, y pueden a veces ser utiles.
 PiramideSencillo(SexoEdad, xlim = c(-.025, .025), prov = "total")
+
+
 segments(0, 0, .02, 0, lwd = .5)
 segments(.02, 0, .02, 5, lwd = .5); text(.02, 3, "2%", cex = .7, pos = 3)
 segments(.01, 0, .01, 5, lwd = .5); text(.01, 3, "1%", cex = .7, pos = 3)
-par(op) # unificar las coordinadadas
-mtext("estructura de migraciones por sexo y edad\nEspaña todas provincias, 2010", line = 2)
 
+
+par(op) # unificar las coordinadadas
+dev.off()
 # claramente, se podria estar un buen rato deseñando este grafico y valdria la pena
 # como el bucle nos salva mucho tiempo replicando, alineando, etc.
 # hay otras maneras de sacar un resultado parecido, vea lattice
@@ -348,8 +365,11 @@ mtext("estructura de migraciones por sexo y edad\nEspaña todas provincias, 2010
 edades.5 <- .5:109.5 # mitad de intervalo
 (em <- matrix(nrow = 53, ncol = 2, dimnames = list(1:53,c("varones","mujeres")))) # matriz para rellenar
 # usando bucle:
+i <- 1
+
 for (i in 1:53){
-    em[i, ] <- colSums(edades.5 * SexoEdadProv[, , i]) / colSums(SexoEdadProv[, , i])
+    em[i, ] <- colSums(edades.5 * SexoEdadProv[, , i]) / 
+      colSums(SexoEdadProv[, , i])
 }
 # ------------------------------------------
 # primera vista:
@@ -360,6 +380,11 @@ plot(em[, 1], em[, 2],
         xlim = c(30,40),
         ylim = c(30,40))
 abline(0,1) # linea de igualdad
+
+a <- rnorm(10000)
+b <- rnorm(10000)
+plot(a,b, pch = 19, col = "#FF000010")
+
 
 # ------------------------------------------
 plot(em[, 1], em[, 2],
@@ -382,22 +407,30 @@ abline(0,1, col = gray(.5))
 # ------------------------------------------
 # variamos diametro del punto segun numero de migraciones:
 nr.migs <- colSums(colSums(SexoEdadProv))
+
+nr.migs <- vector(length = 53)
+for (j in 1:53){
+  nr.migs[j] <- sum(SexoEdadProv[, , j])
+}
+nr.migs <- nr.migs[-length(nr.migs)]
 # quitamos nr 66:
-nr.migs <- nr.migs[1:(length(nr.migs) - 1)]
+#nr.migs <- nr.migs[1:(length(nr.migs) - 1)]
 em      <- em[1:(nrow(em) - 1), ]
+
 plot(em[, 1], em[, 2],
         xlim = c(30,40),
         ylim = c(30,40),
         pch = 19,             # punto solido
         col = "#0055FF80",    # azul con algo de verde, mas opacidad
-        cex = nr.migs / sum(nr.migs) * 500 # mal!
+        cex = nr.migs / sum(nr.migs) * 100 # mal!
 )  
+
 # absurdo- mejor cambar la area del circulo, no el diametro
 
 # ------------------------------------------
 #area = pi*r^2
 sqrt(nr.migs / pi) # sclamos el radio
-diametro.puntos <- sqrt(nr.migs / pi) / 20
+diametro.puntos <- sqrt(nr.migs / pi) / 25
 plot(em[, 1], em[, 2],
         xlim = c(30,40),
         ylim = c(30,40),
@@ -450,6 +483,7 @@ spec.col.ramp(100) # asi podemos aproximar una rampa continua de colores:
 # podriamos decir que el centro sea 1 (0 despues del logoritmo),
 # pero mas adecuado seria la relacion de sexo global de la muestra, no?
 RSglobal <- log(sum(SexoProv[1, ]) / sum(SexoProv[2, ])) 
+rel.sexo <- log(rel.sexo)
 # ahora podemos definir unos intervalos (breaks) inteligentes:
 plot(sort(rel.sexo )) 
 abline(h = RSglobal)
@@ -460,6 +494,8 @@ rel.sexo.resc <- rel.sexo - RSglobal
 col.vec <- cut(rel.sexo.resc, 
                breaks = breaks,                            # intervales
                labels = spec.col.ramp(length(breaks) - 1)) # las etiquetas (1 menos k el numero de intervalos)
+
+
 class(col.vec) # convertimos a character y tenemos un vector de colores que corresponden con nuestros valores :-)
 col.vec <- as.character(col.vec)
 plot(em[, 1], em[, 2],
@@ -473,7 +509,7 @@ plot(em[, 1], em[, 2],
         ylab = "edad media emigrantes mujeres"
 )  
 # -------------------------------------
-col.vec.op <- paste0(col.vec, 90) # 50% opacidad
+col.vec.op <- paste0(col.vec, 70) # 50% opacidad
 plot(em[, 1], em[, 2],
         xlim = c(30,40),
         ylim = c(30,40),
@@ -484,6 +520,9 @@ plot(em[, 1], em[, 2],
         xlab = "edad media emigrantes varones",
         ylab = "edad media emigrantes mujeres"
 )  
+
+text(em[,1],em[,2],labels = 1:52, cex = .5)
+
 # -------------------------------------
 # todavia, nos gustaria que primero dibuje los circulos mas grandes,
 # y acabar con los circulos mas pequeños
@@ -511,7 +550,7 @@ plot(em[plot.order , 1], em[plot.order , 2],
         ylab = "edad media emigrantes mujeres"
 )
 legend("bottomright",col = rev(paste0(spec.col.ramp(7))), pch = 19, pt.cex = 2, 
-        legend = c("muy masculino","masculino","algo masculino","media","algo feminino","feminino","muy feminino"))
+        legend = c("muy masculino","masculino","algo masculino","media","algo femenino","femenino","muy femenino"))
 # igual este grafico no es no mas interesante-
 # lo puedes replicar para municipios?
 
