@@ -95,7 +95,7 @@ DesComTBM <- function(def1, pob1, def2, pob2){
 def <- read.csv("/home/triffe/git/CED-R/CED-R/data/def2011.csv")
 pob <- read.csv("/home/triffe/git/CED-R/CED-R/data/Pop2011.csv")
 
-edades <- def[,1]
+
 Dx <- def[,2]
 Px <- pob[,"Hombres"] 
 Dx[length(Px)] <- sum(Dx[length(Px):length(Dx)])
@@ -155,8 +155,10 @@ TabladeVida <- function(Dx, Px, sexo = "hombres", l0 = 100000){
   
   # Lx = exposicion dentro de la tabla de vida
   Lx <- lx[2:N] +  ax[1:(N-1)] * dx[1:(N-1)]
-  
   Lx[N] <- lx[N] / Mx[N] # cerrar Lx
+  
+#   Lx2 <- lx - (1-ax) * dx
+#   Lx2[N] <- lx[N] / Mx[N]
   
   # Tx: años que queden para vivir de los que han sobrevivido
   # hasta la edad x
@@ -180,10 +182,6 @@ TabladeVida <- function(Dx, Px, sexo = "hombres", l0 = 100000){
 TV <- TabladeVida(Dx, Px)
 head(TV)
 
-# --------------------------------------------------------------
-
-
-
-
+# -------------------------------------------------------------
 
 
