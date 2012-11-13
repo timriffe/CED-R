@@ -355,7 +355,7 @@ EPA3$Hdep <- (EPA3$Htotal -  EPA3$Hocupados) / EPA3$Htotal
 
 
 # --------------------------------------------------------------------------
-# 8) un fichero de parejas:
+# 8) un fichero de parejas: (no toma en cuenta parejas homosexuales!! ERROR! biusca Tim si quieres hacer esto...)
 # primero definimos identificadores unicos de individuos y parejas (NCONY)
 EPA2$IDper        <- paste0(EPA2$NVIVI, EPA2$NPERS)
 EPA2$IDperCONY    <- paste0(EPA2$NVIVI, EPA2$NCONY)
